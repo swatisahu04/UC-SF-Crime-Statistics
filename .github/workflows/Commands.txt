@@ -1,0 +1,58 @@
+##################################
+Initial environment set-up
+
+export SPARK_HOME=$HOME/setups/spark-2.3.3-bin-hadoop2.7
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_202.jdk/Contents/Home
+export SCALA_HOME=/usr/local/bin/scala/
+export PATH=$JAVA_HOME/bin:$SPARK_HOME/bin:$SCALA_HOME/bin:$PATH
+
+pip install -r requirements.txt
+
+##################################
+Starting ZooKeeper/Kafka Services
+
+$HOME/Kafka/kafka_2.11-2.3.0/bin/zookeeper-server-start.sh $HOME/Kafka/kafka_2.11-2.3.0/config/zookeeper.properties > $HOME/Kafka/kafkaLogs/zookeeper_server_`date +%F`_$$.log 2>&1 &
+$HOME/Kafka/kafka_2.11-2.3.0/bin/kafka-server-start.sh $HOME/Kafka/kafka_2.11-2.3.0/config/server.properties > $HOME/Kafka/kafkaLogs/kafka_server_`date +%F`
+_$$.log 2>&1 &
+
+##################################
+Dependency
+pip install kafka-python
+
+##################################
+To trigger Kafka Server set-up
+
+python $HOME/Kafka/Udacity_Kafka/sf-crime-data-project-files/producer_server.py
+python $HOME/Kafka/Udacity_Kafka/sf-crime-data-project-files/kafka_server.py
+
+
+##################################
+To check topic set-up
+
+$HOME/Kafka/kafka_2.11-2.3.0/bin/kafka-topics.sh --list --zookeeper localhost:2181
+
+Topic Name : department.call.service.log
+
+##################################
+To see if you correctly implemented the server, try consuming data from topic
+
+$HOME/Kafka/kafka_2.11-2.3.0/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic department.call.service.log --from-beginning
+
+##################################
+To start spark streaming job
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5 --master local[*] data_stream.py > $HOME/Kafka/Udacity_Kafka/sf-crime-data-project-files/Logs/data_stream_$Log_Date_$$.log 2>&1 &
+
+
+##################################
+As per course :
+
+export SPARK_HOME=/Users/dev/spark-2.4.3-bin-hadoop2.7
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home
+export SCALA_HOME=/usr/local/scala/
+export PATH=$JAVA_HOME/bin:$SPARK_HOME/bin:$SCALA_HOME/bin:$PATH
+
+
+bin/zookeeper-server-start.sh config/zookeeper.properties
+bin/kafka-server-start.sh config/server.properties
+
+bin/kafka-console-consumer.sh --bootstrap-server localhost:<your-port-number> --topic <your-topic-name> --from-beginning
